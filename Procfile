@@ -1,1 +1,1 @@
-web: python manage.py migrate && gunicorn freelancehub.wsgi:application --bind 0.0.0.0:$PORT
+web: gunicorn freelancehub.wsgi:application --bind 0.0.0.0:$PORT
