@@ -1,0 +1,145 @@
+{% extends 'Admin/base.html' %}
+{% block 'admin_content' %}
+{% load static %}
+<!-- Include DataTables CSS and JS from CDN -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.user-list-table').DataTable(); // Initialize DataTable
+    });
+</script>
+
+<style>
+    .user-list-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+
+    .user-list-table th, .user-list-table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .user-list-table th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+
+    .export-button-container {
+        margin-bottom: 20px;
+        text-align: right;
+    }
+
+    .export-button {
+        padding: 10px 15px;
+        border: 1px solid #007bff;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .export-button:hover {
+        background-color: #0056b3;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        margin-left :-80px;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown:hover .export-button {
+        background-color: #0056b3;
+    }
+
+
+</style>
+<div class="row" style="background-color:white;padding:10px;border-radius:10px;">
+    <h3 align="center" style="margin:1% auto;color:#ff0057">Projects</h3>
+</div><br>
+
+<div class="export-button-container">
+    <div class="dropdown">
+        <button class="export-button">Export</button>
+        <div class="dropdown-content">
+            <a href="{% url 'administrator:export_projects_excel' %}">Export as Excel</a>
+            <a href="{% url 'administrator:export_projects_pdf' %}">Export as PDF</a>
+        </div>
+    </div>
+</div><br><br>
+<div class="row" style="background-color:white;padding:10px;border-radius:10px;margin-top:-25px;">
+    <br>
+<table class="user-list-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Client</th>
+            <th>Project Title</th>
+            <th>Category</th>
+            <th>Budget(@18% gst)</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        {% for project in projects %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><img src="{{ project.client_info.profile_picture.url }}" alt="Profile Picture" width="50" style="padding-right:20px;">  {{ project.client_info.name }}</td>
+                <td>{{ project.project.title }}</td>
+                <td>{{ project.project.category }}</td>
+                <td>{{ project.project.total_including_gst }}</td>
+                <td class="font-weight-medium">
+                    <div class="badge 
+                    {% if project.project.project_status == 'Not Started' %}
+                        badge-danger
+                    {% elif project.project.project_status == 'In Progress' %}
+                        badge-warning
+                    {% elif project.project.project_status == 'Completed' %}
+                        badge-success
+                    {% else %}
+                        badge-secondary
+                    {% endif %}
+                ">
+                      {{ project.project.project_status }}
+                    </div>
+            </tr>
+            {% empty %}
+            <li>No projects available.</li>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

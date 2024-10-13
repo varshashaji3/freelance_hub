@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 150px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            word-wrap: break-word; /* Ensure long words break and wrap */
+            vertical-align: top; /* Align text at the top of cells */
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        td img {
+            max-width: 50px; /* Limit image size */
+            height: 50px; /* Maintain aspect ratio */
+        }
+        td {
+            min-width: 150px; /* Set a minimum width for better layout */
+            overflow: hidden; /* Hide overflow text */
+            text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+        th:nth-child(1), td:nth-child(1) {
+            width: 5%; /* Narrow width for index */
+        }
+        th:nth-child(2), td:nth-child(2) {
+            width: 20%; /* Adjust width for Name/Company */
+        }
+        th:nth-child(3), td:nth-child(3) {
+            width: 25%; /* Adjust width for Email */
+        }
+        th:nth-child(4), td:nth-child(4) {
+            width: 15%; /* Adjust width for User Type */
+        }
+        th:nth-child(5), td:nth-child(5) {
+            width: 10%; /* Adjust width for Status */
+        }
+        th:nth-child(6), td:nth-child(6) {
+            width: 10%; /* Adjust width for Date Joined */
+        }
+        th:nth-child(7), td:nth-child(7) {
+            width: 10%; /* Adjust width for Last Login */
+        }
+        th:nth-child(8), td:nth-child(8) {
+            width: 15%; /* Adjust width for Phone Number */
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://i.postimg.cc/mks7tgfG/logo.png" alt="Site Logo">
+        <h1>Project Details</h1>
+    </div>
+
+    <table class="user-list-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Client</th>
+                <th>Project Title</th>
+                <th>Category</th>
+                <th>Budget(@18% gst)</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            {% for project in projects %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><img src="{{ project.client_info.profile_picture.url }}" alt="Profile Picture" width="50" style="padding-right:20px;">  {{ project.client_info.name }}</td>
+                    <td>{{ project.project.title }}</td>
+                    <td>{{ project.project.category }}</td>
+                    <td>{{ project.project.total_including_gst }}</td>
+                    <td class="font-weight-medium">
+                        <div class="badge 
+                        {% if project.project.project_status == 'Not Started' %}
+                            badge-danger
+                        {% elif project.project.project_status == 'In Progress' %}
+                            badge-warning
+                        {% elif project.project.project_status == 'Completed' %}
+                            badge-success
+                        {% else %}
+                            badge-secondary
+                        {% endif %}
+                    ">
+                          {{ project.project.project_status }}
+                        </div>
+                </tr>
+                {% empty %}
+                <li>No projects available.</li>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 150px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            word-wrap: break-word; /* Ensure long words break and wrap */
+            vertical-align: top; /* Align text at the top of cells */
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        td img {
+            max-width: 30px; /* Limit image size */
+            height: 30px; /* Maintain aspect ratio */
+        }
+        td {
+            min-width: 150px; /* Set a minimum width for better layout */
+            overflow: hidden; /* Hide overflow text */
+            text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+        th:nth-child(1), td:nth-child(1) {
+            width: 5%; /* Narrow width for index */
+        }
+        th:nth-child(2), td:nth-child(2) {
+            width: 20%; /* Adjust width for Name/Company */
+        }
+        th:nth-child(3), td:nth-child(3) {
+            width: 25%; /* Adjust width for Email */
+        }
+        th:nth-child(4), td:nth-child(4) {
+            width: 15%; /* Adjust width for User Type */
+        }
+        th:nth-child(5), td:nth-child(5) {
+            width: 10%; /* Adjust width for Status */
+        }
+        th:nth-child(6), td:nth-child(6) {
+            width: 10%; /* Adjust width for Date Joined */
+        }
+        th:nth-child(7), td:nth-child(7) {
+            width: 10%; /* Adjust width for Last Login */
+        }
+        th:nth-child(8), td:nth-child(8) {
+            width: 15%; /* Adjust width for Phone Number */
+        }
+    </style>
+</head>
+<body>
+    
+<div class="header">
+    <img src="https://i.postimg.cc/mks7tgfG/logo.png" alt="Site Logo" >
+    <h1>Complaints</h1>
+</div>
+
+<table class="user-list-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Complainant</th>
+            <th>Complaint Type</th>
+            <th>Subject</th>
+            <th>Description</th>
+            <th>Date Filed</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for complaint in complaints %}
+            <tr>
+                <td>{{ complaint.slno }}</td>
+                <td>{{ complaint.complainant }}</td>
+                <td>{{ complaint.complaint_type }}</td>
+                <td>{{ complaint.subject }}</td>
+                <td>{{ complaint.description }}</td>
+                <td>{{ complaint.date_filed|date:"Y-m-d" }}</td>
+                <td>{{ complaint.status }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

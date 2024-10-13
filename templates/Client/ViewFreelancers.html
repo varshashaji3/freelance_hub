@@ -1,0 +1,110 @@
+{% extends 'client/base.html' %}
+{% block 'client_content' %}
+{% load static %}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center text-primary">Freelancers</h2>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <form method="GET" id="filterForm" class="form-row align-items-center">
+                <div class="col-md-3 mb-2">
+                    <input type="text" name="search" id="searchInput" placeholder="Search by name or profession..." class="form-control" value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-3 mb-2">
+                    <select name="profession" id="profession" class="form-control">
+                        <option value="">Filter by profession</option>
+                        {% for profession in profession_choices %}
+                            <option value="{{ profession }}" {% if request.GET.profession == profession %}selected{% endif %}>{{ profession }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <select name="skill" id="skill" class="form-control">
+                        <option value="">Filter by skill</option>
+                        {% for skill in skill_choices %}
+                            <option value="{{ skill }}" {% if request.GET.skill == skill %}selected{% endif %}>{{ skill }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <button type="submit" class="btn btn-primary mr-2">Apply Filters</button>
+                    <a href="{% url 'client:freelancer_list' %}" class="btn btn-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for user_data in users %}
+            {% if user_data.registers %}
+                {% for register in user_data.registers %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                {% if register.profile_picture %}
+                                    <img src="{{ register.profile_picture.url }}" alt="User Image" class="profile-img mb-3">
+                                {% else %}
+                                    <img src="{% static 'img/default-profile.jpg' %}" alt="Default User Image" class="profile-img mb-3">
+                                {% endif %}
+                                <h5 class="card-title">{{ register.first_name|default:'' }} {{ register.last_name|default:'' }}</h5>
+                                <p class="card-text text-muted">
+                                    {% for profession in user_data.professions %}
+                                        <span class="profession">{{ profession }}{% if not forloop.last %}, {% endif %}</span>
+                                    {% empty %}
+                                        No professions listed
+                                    {% endfor %}
+                                </p>
+                                <p class="card-text">{{ register.bio_description|default:''|truncatewords:20 }}</p>
+                                <a href="{% url 'client:freelancer_detail' user_data.user.id %}" class="btn btn-primary">View Details</a>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="social-media">
+                                    <a href="{{ register.linkedin }}" class="social-icon"><img src="{% static 'img/linkedin.png' %}" alt="Linkedin"></a>
+                                    <a href="{{ register.instagram }}" class="social-icon"><img src="{% static 'img/instagram.png' %}" alt="Instagram"></a>
+                                    <a href="{{ register.twitter }}" class="social-icon"><img src="{% static 'img/twitter.png' %}" alt="Twitter"></a>
+                                    <a href="{{ user_data.freelancer_profile.portfolio_link }}" class="social-icon"><img src="{% static 'img/web.png' %}" alt="Website"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .profile-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .social-media {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .social-icon img {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+{% endblock %}

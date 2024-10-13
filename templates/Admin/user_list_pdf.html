@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 150px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            word-wrap: break-word; /* Ensure long words break and wrap */
+            vertical-align: top; /* Align text at the top of cells */
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        td img {
+            max-width: 50px; /* Limit image size */
+            height: 50px; /* Maintain aspect ratio */
+        }
+        td {
+            min-width: 150px; /* Set a minimum width for better layout */
+            overflow: hidden; /* Hide overflow text */
+            text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+        th:nth-child(1), td:nth-child(1) {
+            width: 5%; /* Narrow width for index */
+        }
+        th:nth-child(2), td:nth-child(2) {
+            width: 20%; /* Adjust width for Name/Company */
+        }
+        th:nth-child(3), td:nth-child(3) {
+            width: 25%; /* Adjust width for Email */
+        }
+        th:nth-child(4), td:nth-child(4) {
+            width: 15%; /* Adjust width for User Type */
+        }
+        th:nth-child(5), td:nth-child(5) {
+            width: 10%; /* Adjust width for Status */
+        }
+        th:nth-child(6), td:nth-child(6) {
+            width: 10%; /* Adjust width for Date Joined */
+        }
+        th:nth-child(7), td:nth-child(7) {
+            width: 10%; /* Adjust width for Last Login */
+        }
+        th:nth-child(8), td:nth-child(8) {
+            width: 15%; /* Adjust width for Phone Number */
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://i.postimg.cc/mks7tgfG/logo.png" alt="Site Logo">
+        <h1>User List</h1>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name/Company</th>
+                <th>Email</th>
+                <th>User Type</th>
+                <th>Phone Number</th>
+                
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                    
+                        {{ user.name }}
+                </td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.phone_number }}</td>
+                <td>{{ user.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

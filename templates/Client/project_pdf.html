@@ -1,0 +1,95 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        img {
+            display: block;
+            margin: 0 auto 20px;  /* Centered with bottom margin */
+            width: 150px;  /* Adjust as needed */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;  /* Aligns text to the top of the cell */
+            max-width: 200px;    /* Set a max width to prevent overlapping */
+            overflow: hidden;     /* Hides overflow text */
+            text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
+            white-space: nowrap;  /* Prevents text from wrapping */
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;  /* Alternating row colors */
+        }
+        tr:hover {
+            background-color: #f1f1f1;  /* Highlight on hover */
+        }
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            table {
+                page-break-inside: auto;  /* Avoid breaking the table in the middle */
+            }
+            tr {
+                page-break-inside: avoid;  /* Prevent row breaks */
+                page-break-after: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Add the logo here -->
+    <img src="{% static 'img/logo.png' %}" alt="Logo">
+
+    <h1>Project List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Project Title</th>
+                <th>Freelancer Name</th>
+                <th>Description</th>
+                <th>Project Status</th>
+                <th>Budget</th>
+                <th>Total Including GST</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ project.title }}</td>
+                <td>{{ project.freelancer }}</td>
+                <td>{{ project.description }}</td>
+                <td>{{ project.status }}</td>
+                <td>{{ project.budget }}</td>
+                <td>{{ project.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

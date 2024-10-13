@@ -1,0 +1,256 @@
+{% extends 'client/base.html' %}
+{% block 'client_content' %}
+{% load static %}
+{% load custom_filters %}
+
+<style>
+    .error {
+        color: red;
+        font-family: Comic Sans MS;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+</style>
+<div class="container mt-4" >
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="text-center" style="color:#ff0057">Projects</h3>
+        </div>
+    </div>
+
+    
+    <div class="row" style="margin-right:-60px;background-color:white;">
+        <div class="row mb-3" style="margin-left:700px;margin-top:30px;">
+            <div class="col-12 d-flex justify-content-between">
+                <a href="{% url 'client:add_new_project' %}" class="btn btn-primary add-project-btn" style="margin-right:10px;">Add New Project</a>
+                <!-- New Export Dropdown -->
+                <div class="btn-group" style="margin-right:10px;">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Export
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'client:export_projects_pdf' %}">Export to PDF</a>
+                        <a class="dropdown-item" href="{% url 'client:export_projects_excel' %}">Export to Excel</a>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+        <div class="col-12" style="margin-top:10px;">
+            
+            <div class="table-responsive" style="margin-top:-10px;">
+                <form method="GET" id="filterForm" class="form-row align-items-center" style="margin-right:10px;width:350px;margin-left:790px;">
+                    <div class="col-md-6 mb-2">
+                        <input type="text" name="search" id="searchInput" placeholder="Search by title..." class="form-control" value="{{ request.GET.search }}">
+                    </div>
+                    
+                </form>
+                <table id="projectTable" class="table table-hover table-bordered table-responsive-sm" >
+                    
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Budget</th>
+                            <th>Status</th>
+                            <th>Assigned To (Freelancer)</th>
+                            <th class="actions-column text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects %}
+                        <tr>
+                            <td>{{ project.title|default:'' }}</td>
+                            <td>{{ project.description|default:''|truncatechars:50 }}</td>
+                            <td>{{ project.budget|default:'' }}</td>
+                            <td>
+                                <form action="{% url 'client:toggle_project_status' project.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm {% if project.status == 'open' %}btn-success{% else %}btn-danger{% endif %}" data-toggle="tooltip" title="{% if project.status == 'open' %}Click to close{% else %}Click to open{% endif %}">
+                                        {% if project.status == 'open' %}Open{% else %}Closed{% endif %}
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                {% if project.id in freelancer_names %}
+                                    {{ freelancer_names|get_item:project.id }}
+                                {% else %}
+                                    <span class="text-muted">No freelancer assigned</span>
+                                {% endif %}
+                            </td>
+                            <td class="actions-column text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'client:single_project_view' project.id %}" class="btn btn-sm btn-secondary" title="View Project"><i class="fa-solid fa-eye"></i></a>
+                                    <a href="{% url 'client:edit_project' project.id %}" class="btn btn-sm btn-primary" title="Edit Project"><i class="fa-solid fa-edit"></i></a>
+                                    {% if project_repos|get_item:project.id %}
+                                    <a href="{% url 'client:view_repository' project_repos|get_item:project.id %}" title="View Repository" class="btn btn-sm btn-info view-repo-btn" data-project-id="{{ project.id }}" data-repo-id="{{ project_repos|get_item:project.id }}">
+                                        <i class="fa-solid fa-folder-open"></i>
+                                    </a>
+                                {% else %}
+                                    <a href="#" class="btn btn-sm btn-info github-icon" title="Create Repository" data-project-id="{{ project.id }}">
+                                        <i class="fa-brands fa-github"></i>
+                                    </a>
+                                {% endif %}
+                                    
+                                
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="githubModal" tabindex="-1" role="dialog" aria-labelledby="githubModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="githubModalLabel">Create New Repository</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'client:create_repository' %}" id="repoform">
+                {% csrf_token %}
+                <input type="hidden" id="projectId" name="project_id" value="">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="repoName">Repository Name:</label>
+                        <input type="text" class="form-control" id="repoName" placeholder="Enter repository name" name="repoName">
+                        <br><span id="error_repoName" class="error"></span>
+                    </div>
+                    <!-- Add your GitHub repository content here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <span id="repo_err" class="error"></span>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#repoName").keyup(function () {
+            check_repoName();
+        });
+    
+        var repoName_error = false;
+    
+        function check_repoName() {
+            var pattern = /^[a-zA-Z0-9_-]+( [a-zA-Z0-9_-]+)*$/;
+
+            var repoName = $("#repoName").val();
+            if (pattern.test(repoName) && repoName !== "") {
+                $("#error_repoName").hide();
+                $("#repoName").css("border", "2px solid green");
+                repoName_error = false;
+            } else {
+                $("#error_repoName").html("Repository Name should contain only letters, numbers, and spaces").show();
+                $("#repoName").css("border", "2px solid red");
+                repoName_error = true;
+            }
+        }
+    
+        $("#repoform").submit(function () {
+            repoName_error = false; // Reset error flag
+    
+            check_repoName(); // Validate repository name
+    
+            if (repoName_error) {
+                $("#repo_err").html("Please fill the form correctly.").show();
+                return false; 
+            } else {
+                $("#repo_err").hide(); 
+                return true; 
+                        }
+        });
+    
+    });
+    
+</script>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#projectTable').DataTable({
+        "paging": true,
+        "searching": false, // Disable the search option
+        "info": true,
+        "responsive": true,
+        "autoWidth": false,
+        "columnDefs": [
+            { "width": "15%", "targets": 5 } // Set width for Actions column
+        ]
+    });
+
+    // Enable tooltips
+    $('[title]').tooltip();
+
+    // GitHub icon click event
+    $('.github-icon').click(function(e) {
+        e.preventDefault();
+        $('#githubModal').modal('show');
+        $('#projectId').val($(this).data('project-id'));
+    });
+
+    // Save repository button click event
+    $('#saveRepo').click(function() {
+        var repoName = $('#repoName').val();
+        // Add your logic to save the repository name
+        console.log("Repository name:", repoName);
+        $('#githubModal').modal('hide');
+    });
+});
+</script>
+
+<style>
+    .table-responsive {
+        overflow-x: auto;
+    }
+    #projectTable {
+        width: 100%;
+        table-layout: auto;
+        background-color: white;
+    }
+    #projectTable th,
+    #projectTable td {
+        white-space: normal;
+        word-wrap: break-word;
+        max-width: none;
+    }
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        margin-right: 2px;
+    }
+    .github-icon {
+        color: #ffffff;
+    }
+    .action-buttons {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .action-buttons .btn {
+        margin-right: 5px;
+    }
+</style>
+{% endblock %}

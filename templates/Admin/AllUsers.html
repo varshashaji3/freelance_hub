@@ -1,0 +1,152 @@
+{% extends 'Admin/base.html' %}
+{% block 'admin_content' %}
+{% load static %}
+{% load custom_filters %}  <!-- Load the custom filter -->
+<style>
+    .user-list-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        
+        margin-top: 20px;
+    }
+
+    .user-list-table th, .user-list-table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .user-list-table th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+
+    .export-button-container {
+        margin-bottom: 20px;
+        text-align: right;
+    }
+
+    .export-button {
+        padding: 10px 15px;
+        border: 1px solid #007bff;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .export-button:hover {
+        background-color: #0056b3;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        margin-left :-80px;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown:hover .export-button {
+        background-color: #0056b3;
+    }
+</style>
+<div class="row" style="background-color:white;padding:10px;border-radius:10px;">
+    <h3 align="center" style="margin:1% auto;color:#ff0057">User List</h3>
+</div><br> <!-- Debug line to check the value -->
+<!-- Add a dropdown to select the year -->
+<div class="export-button-container">
+    <div class="dropdown">
+        <button class="export-button">Export</button>
+        <div class="dropdown-content">
+            <a href="{% url 'administrator:export_users_excel' %}?year={{ request.GET.year }}">Export as Excel</a>
+            <a href="{% url 'administrator:export_users_pdf' %}?year={{ request.GET.year }}">Export as PDF</a>
+        </div>
+    </div>
+</div><br><br>
+
+<!-- Add a year filter -->
+<div class="year-filter">
+    <form method="GET">
+        <label for="year">Filter by Year:</label>
+        <select name="year" id="year" onchange="this.form.submit()">
+            <option value="">Select Year</option>  <!-- Default option -->
+            <option value="">All Years</option>
+            {% for year in 2023|to:current_year %}  <!-- Start from 2023 to current year -->
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div><br>
+
+<div class="row" style="background-color:white;padding:10px;border-radius:10px;margin-top:-25px;">
+    
+<table class="user-list-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name/Company</th>
+            <th>Email</th>
+            <th>User Type</th>
+            <th>Status</th>
+            <th>Date Joined</th>
+            <th>Phone Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if users|length == 0 %}
+            <tr>
+                <td colspan="7" style="text-align:center;">No users found for the selected year.</td>
+            </tr>
+        {% else %}
+            {% for user in users %}
+                {% if request.GET.year == user.joined|date:'Y' or request.GET.year == "" %}  <!-- Display all users if "All Years" is selected -->
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        {% if user.role == 'freelancer' %}
+                        <td>{% if user.profile_picture %}<img src="{{ user.profile_picture }}" width="50" height="50" style="padding-right:10px;">{% else %}N/A{% endif %}   {{ user.freelancer_name }}</td>
+                        {% else %}
+                        <td>{% if user.profile_picture %}<img src="{{ user.profile_picture }}" width="50" height="50" style="padding-right:10px;">{% else %}N/A{% endif %}   {{ user.name }}</td>
+                        
+                        {% endif %} <!-- Display name based on client type -->
+                        
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>
+                            <span style="background-color: {% if user.status == 'active' %} #d4edda {% else %} #f8d7da {% endif %}; padding: 4px 8px; border-radius: 5px;">{{ user.status }}</span>
+                        </td>
+                        <td>{{ user.joined|date:"Y-m-d" }}</td>
+                        
+                        <td>{{ user.phone_number }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

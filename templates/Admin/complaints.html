@@ -1,0 +1,118 @@
+{% extends 'Admin/base.html' %}
+{% block 'admin_content' %}
+{% load static %}
+<style>
+    .user-list-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+
+    .user-list-table th, .user-list-table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .user-list-table th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+    }
+
+    .export-button-container {
+        margin-bottom: 20px;
+        text-align: right;
+    }
+
+    .export-button {
+        padding: 10px 15px;
+        border: 1px solid #007bff;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .export-button:hover {
+        background-color: #0056b3;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        margin-left :-80px;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown:hover .export-button {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="row" style="background-color:white;padding:10px;border-radius:10px;">
+    <h3 align="center" style="margin:1% auto;color:#ff0057">All Compalints</h3>
+</div><br>
+<div class="export-button-container">
+    <div class="dropdown">
+        <button class="export-button">Export</button>
+        <div class="dropdown-content">
+            <a href="{% url 'administrator:export_complaints_excel' %}">Export as Excel</a>
+            <a href="{% url 'administrator:export_complaints_pdf' %}">Export as PDF</a>
+        </div>
+    </div>
+</div><br><br>
+<div class="row" style="background-color:white;padding:10px;border-radius:10px;margin-top:-25px;">
+    <br>
+<table class="user-list-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Complainant</th>
+            <th>Complaint Type</th>
+            <th>Subject</th>
+            <th>Description</th>
+            <th>Date Filed</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for complaint in complaints %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ complaint.user }}</td>
+                <td>{{ complaint.complaint_type }}</td>
+                <td>{{ complaint.subject }}</td>
+                <td>{{ complaint.description }}</td>
+                <td>{{ complaint.date_filed|date:"Y-m-d" }}</td>
+                <td>{{ complaint.status }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
