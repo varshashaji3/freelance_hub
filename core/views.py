@@ -165,7 +165,7 @@ def login(request):
                 user.welcome_email_sent = True
                 user.save()
                 
-                send_welcome_email(request, user)
+                # send_welcome_email(request, user)
                 
             return redirect_based_on_user_type(request, user)
         
@@ -182,7 +182,7 @@ def login(request):
             user.welcome_email_sent = True
             user.save()
             
-            send_welcome_email(request, user)
+            # send_welcome_email(request, user)
                 
         return redirect_based_on_user_type(request, user)
     
