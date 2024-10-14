@@ -86,7 +86,8 @@ CSRF_TRUSTED_ORIGINS = ['https://freelancehub-production.up.railway.app']
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'media/templates'),],
         
         'APP_DIRS': True,
         'OPTIONS': {

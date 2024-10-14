@@ -482,7 +482,7 @@ def reviews(request):
         'reviews': reviews_list,
     }
     
-    return render(request, 'admin/reviews.html', context)
+    return render(request, 'Admin/reviews.html', context)
 
 
 
@@ -533,7 +533,7 @@ def allusers(request):
         'current_year': current_year
     }
     
-    return render(request, 'admin/allusers.html', context)
+    return render(request, 'Admin/allusers.html', context)
 
 
 
@@ -618,7 +618,7 @@ def export_users_to_pdf(request):
 
     # Render the PDF template
     context = {'users': user_details}
-    html = render_to_string('admin/user_list_pdf.html', context)
+    html = render_to_string('Admin/user_list_pdf.html', context)
     
     # Create PDF
     response = HttpResponse(content_type='application/pdf')
@@ -654,7 +654,7 @@ def complaints(request):
         'complaints': complaints_list,
     }
     
-    return render(request, 'admin/complaints.html', context)
+    return render(request, 'Admin/complaints.html', context)
 
 
 
@@ -679,7 +679,7 @@ def export_complaints_pdf(request):
 
     # Render the PDF template
     context = {'complaints': complaint_details}
-    html = render_to_string('admin/complaints_pdf.html', context)
+    html = render_to_string('Admin/complaints_pdf.html', context)
     
     # Create PDF
     response = HttpResponse(content_type='application/pdf')
@@ -759,7 +759,7 @@ def projects(request):
         'projects': project_data
     }
 
-    return render(request, 'admin/Projects.html', context)
+    return render(request, 'Admin/Projects.html', context)
 
 
 
@@ -812,7 +812,7 @@ def export_projects_pdf(request):
             }
         })
 
-    html_string = render_to_string('admin/projects_pdf.html', {'projects': project_data})
+    html_string = render_to_string('Admin/projects_pdf.html', {'projects': project_data})
     result = BytesIO()
     pdf = pisa.CreatePDF(BytesIO(html_string.encode("UTF-8")), dest=result)
 
@@ -850,7 +850,7 @@ def site_complaints(request):
         'complaints': site_complaints_list,
     }
     
-    return render(request, 'admin/site_complaints.html', context)  # Create a corresponding template for this view
+    return render(request, 'Admin/site_complaints.html', context)  # Create a corresponding template for this view
 
 
 def update_solution(request):
